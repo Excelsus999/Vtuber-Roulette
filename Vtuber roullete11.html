@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      text-align: center;
+      font-family: "Gotham", Arial, sans-serif;
+      transition: background-color 0.5s; /* Smooth transition for background color change */
+    }
+
+    h1 {
+      font-size: 32px; /* Increased font size for the title */
+    }
+
+    button {
+      font-size: 48px; /* Largest font size for buttons */
+      padding: 20px 40px; /* Increased padding for larger buttons */
+    }
+
+    #result {
+      font-size: 48px; /* Increased font size for the result */
+      margin-top: 200px; /* Placed a bit further down the page */
+    }
+
+    #startButton, #stopButton {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40%;
+    }
+
+    #stopButton {
+      display: none; /* Hide the Stop button initially */
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <h1>Vtuber Roulette</h1>
+  <div id="result">The selected Vtuber will appear here.</div>
+  <button id="startButton" onclick="toggleRoulette(this)">
+    <i class="fas fa-play"></i> Start
+  </button>
+  <button id="stopButton" onclick="toggleRoulette(this)">
+    <i class="fas fa-stop"></i> Stop
+  </button>
+
+  <script>
+    const vtubers = [
+      "Kizuna AI",
+      "Kaguya Luna",
+      "Mirai Akari",
+      "Siro",
+      "Hoshimachi Suisei",
+      "Tokino Sora",
+      "Roboco",
+      "Natsuiro Matsuri",
+      "Haato Akai",
+      "Inugami Korone",
+      "Usada Pekora",
+      "Shirakami Fubuki",
+      "Shiranui Flare",
+      "Shirogane Noel",
+      "Kureiji Ollie",
+      "Pavolia Reine",
+      "Mori Calliope",
+      "Gura Gawr",
+      "Ninomae Ina'nis",
+      "Watson Amelia",
+      "Takanashi Kiara",
+      "Shishiro Botan",
+      "Omaru Polka",
+      "Himemori Luna",
+      "Kiryu Coco",
+      "Tsunomaki Watame",
+      "Amane Kanata",
+      "Tokoyami Towa",
+      "Lamy",
+      "Calliope Mori",
+      "Uruha Rushia",
+      "Oozora Subaru",
+      "Ayunda Risu",
+      "Airani Iofifteen",
+      "Kureha Kurono",
+      "Kanade Izuru",
+      "Tsukino Mito",
+      "Koyori Kanzaki",
+      "Astel Leda",
+      "Temma",
+      "Artia",
+      "Artemis of the Blue",
+      "Yakushiji Suzaku",
+      "Civia",
+      "Yogiri",
+      "Rosalyn",
+      "JiU",
+      "Luna Kaguya",
+      "Furen E Lustario",
+      "Spade Echo",
+      "Ceres Fauna",
+      "Selen Tatsuki",
+      "Seira Hoshisaki",
+      "La+ Darknesss",
+      "Mito Tsukino",
+      "Lize Helesta",
+      "Ange Katrina",
+      "Luno",
+      "Yuuyu",
+      "Sasaki Saku",
+      "Melissa Kinrenka",
+      "Maimoto Keisuke",
+      "Tia Belle",
+      "Ceres",
+      "Minami Momoya",
+      "Yashiro Kizuku",
+      "Arurandeisu",
+      "Kaida Haru",
+      "Roberu",
+      "Temma",
+      "Pomu Rainpuff",
+      "Hibiki Ao",
+      "Kamishiro Rena",
+      "Irys",
+      "Kuzuha",
+      "Rikka",
+      "Kuran",
+      "Kageyama Shien",
+      "Kagami Kira",
+      "Moira",
+      "Aire Kokonoe",
+      "Saegusa Akina",
+      "Projekt Melody",
+      "Silvervale",
+      "Ironmouse",
+      "Fruit",
+      "Nyanners",
+      "Vei",
+      "Bunny_GIF",
+      "Natori Sana",
+      "Sushi Lion",
+      "ZenMira",
+      "Elira Pendora",
+      "Smol",
+      "Snuffy",
+      "Zentreya",
+      "Phia",
+      "Rosuuri",
+      "Mana Aizawa",
+      "MoeAka",
+      "Vtuber James",
+      "Giga-P",
+      "Rikka",
+      "Lumi",
+      "Toko Inari",
+      "Sincia",
+      "Anya Melfissa",
+      "Prima Asparas",
+      "Leysritt Reine",
+      "Spira Spica",
+      "Elton Felix",
+      "Caleb Glorious",
+      "Velitia",
+      "Neuro-sama",
+      "Vedal987",
+      "Digital Dolly",
+      "Nyaraka",
+      "Projekt Red",
+      "Moona Hoshinova",
+      "Hana Macchia",
+      "Umi Bazu",
+      "Virtually Vain",
+      "Lily Longhaul",
+      "Mitoko",
+      "Aki Rosenthal",
+      "Kizira",
+      "TeaToki",
+      "Vex Vurpe",
+      "Rui Kurano",
+      "Serene Serenity"
+      // Add all the Vtubers from your list here...
+    ];
+
+    let intervalId;
+    let isRouletteRunning = false;
+
+    function getRandomColor() {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    function toggleRoulette(button) {
+      const resultDiv = document.getElementById("result");
+      const startButton = document.getElementById("startButton");
+      const stopButton = document.getElementById("stopButton");
+
+      isRouletteRunning = !isRouletteRunning;
+
+      if (isRouletteRunning) {
+        stopButton.style.display = "block";
+        startButton.style.display = "none";
+        button.style.backgroundColor = getRandomColor();
+        document.body.style.backgroundColor = getRandomColor(); // Change the background color of the entire page
+        resultDiv.style.color = getRandomColor(); // Change the font color
+
+        intervalId = setInterval(() => {
+          const randomIndex = Math.floor(Math.random() * vtubers.length);
+          resultDiv.textContent = vtubers[randomIndex];
+        }, 100); // Change this interval for roulette speed
+      } else {
+        startButton.style.display = "block";
+        stopButton.style.display = "none";
+        button.style.backgroundColor = "";
+        document.body.style.backgroundColor = ""; // Reset the background color of the entire page
+        resultDiv.style.color = ""; // Reset the font color
+        clearInterval(intervalId);
+      }
+    }
+  </script>
+</body>
+</html>
