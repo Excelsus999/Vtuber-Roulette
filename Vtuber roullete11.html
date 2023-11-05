@@ -5,24 +5,36 @@
     body {
       text-align: center;
       font-family: "Gotham", Arial, sans-serif;
-      transition: background-color 0.5s; /* Smooth transition for background color change */
+      font-size: 32px;
+      transition: background-color 0.5s;
+      animation: colorChange 5s linear infinite;
+    }
+
+    @keyframes colorChange {
+      0% { color: #FF5733; }
+      25% { color: #FFBD33; }
+      50% { color: #33FF57; }
+      75% { color: #337DFF; }
+      100% { color: #9A33FF; }
     }
 
     h1 {
-      font-size: 32px; /* Increased font size for the title */
+      font-size: 64px;
     }
 
     button {
-      font-size: 48px; /* Largest font size for buttons */
-      padding: 20px 40px; /* Increased padding for larger buttons */
+      font-size: 48px;
+      padding: 20px 40px;
+      font-family: "Gotham", Arial, sans-serif;
     }
 
     #result {
-      font-size: 48px; /* Increased font size for the result */
-      margin-top: 200px; /* Placed a bit further down the page */
+      font-size: 75px;
+      margin-top: 200px;
     }
 
-    #startButton, #stopButton {
+    #startButton,
+    #stopButton {
       position: absolute;
       bottom: 20px;
       left: 50%;
@@ -31,7 +43,7 @@
     }
 
     #stopButton {
-      display: none; /* Hide the Stop button initially */
+      display: none;
     }
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -46,9 +58,23 @@
     <i class="fas fa-stop"></i> Stop
   </button>
 
+ <audio id="backgroundAudio" autoplay loop>
+  <source src="https://github.com/Excelsus999/Vtuber-Roulette/raw/main/Please%20Select%20Your%20Character%202.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+  </audio>
+
+  <audio id="buttonAudio">
+    <source src="https://github.com/Excelsus999/Vtuber-Roulette/raw/main/ding2.wav" type="audio/wav">
+    Your browser does not support the audio element.
+  </audio>
+
+  <audio id="stopButtonAudio">
+    <source src="https://github.com/Excelsus999/Vtuber-Roulette/raw/main/123.wav" type="audio/wav">
+    Your browser does not support the audio element.
+  </audio>
+
   <script>
     const vtubers = [
-      "Kizuna AI",
       "Kaguya Luna",
       "Mirai Akari",
       "Siro",
@@ -122,7 +148,7 @@
       "Hibiki Ao",
       "Kamishiro Rena",
       "Irys",
-      "Kuzuha",
+      "Kuzuza",
       "Rikka",
       "Kuran",
       "Kageyama Shien",
@@ -149,6 +175,7 @@
       "Mana Aizawa",
       "MoeAka",
       "Vtuber James",
+      "Pipkin Pippa",
       "Giga-P",
       "Rikka",
       "Lumi",
@@ -177,12 +204,78 @@
       "TeaToki",
       "Vex Vurpe",
       "Rui Kurano",
-      "Serene Serenity"
-      // Add all the Vtubers from your list here...
+      "Serene Serenity",
+      "Aria Bright",
+      "Eclipse Nightshade",
+      "Luna Aurora",
+      "Nova Starling",
+      "Sakura Rain",
+      "Haruki Shinju",
+      "Hikari Tsuki",
+      "Sora Meadows",
+      "Kai Everglen",
+      "Kira Frost",
+      "Miko Silverwing",
+      "Yuki Shadowdancer",
+      "Akira Blaze",
+      "Asuka Stardust",
+      "Rin Phoenix",
+      "Riku Stardust",
+      "Yuna Celestial",
+      "Ryuko Nebula",
+      "Aki Nova",
+      "Kaito Stellarsky",
+      "Rin Oceanshine",
+      "Lumi Frostfall",
+      "Hana Moonlight",
+      "Sakura Skyfire",
+      "Kazuki Aurora",
+      "Aoi Nebulight",
+      "Akemi Starstrider",
+      "Koharu Duskwing",
+      "Hinata Celestia",
+      "Mio Astral",
+      "Rei Luminara",
+      "Sakura Stardrift",
+      "Haru Solstice",
+      "Ren Galaxyfall",
+      "Sora Stellargaze",
+      "Kai Lunarion",
+      "Kira Darkwing",
+      "Miyu Starfrost",
+      "Yumi Stardancer",
+      "Rin Solarflare",
+      "Aoi Moonshadow",
+      "Riku Starhaven",
+      "Yuki Nightlark",
+      "Hoshi Stardust",
+      "Mitsuki Eclipse",
+      "Sakura Celestium",
+      "Sora Skyblaze",
+      "Ren Solarnova",
+      "Aki Moonshimmer",
+      "Kaito Starlance",
+      "Rin Dawnfire",
+      "Hinata Celestialsong",
+      "Mio Lunarwing",
+      "Koharu Stardale",
+      "Haruki Stardust",
+      "Akira Nightfall",
+      "Yuna Galaxydream",
+      "Aria Starfire",
+      "Kai Nebulasong",
+      "Kira Lumina",
+      "Akemi Nightfall",
+      "Rei Celestialdream",
+      "Kazuki Starcaller",
+      "Miko Daybreak",
     ];
 
     let intervalId;
     let isRouletteRunning = false;
+    const buttonAudio = document.getElementById('buttonAudio');
+    const stopButtonAudio = document.getElementById('stopButtonAudio');
+    const backgroundAudio = document.getElementById('backgroundAudio');
 
     function getRandomColor() {
       const letters = "0123456789ABCDEF";
@@ -204,22 +297,32 @@
         stopButton.style.display = "block";
         startButton.style.display = "none";
         button.style.backgroundColor = getRandomColor();
-        document.body.style.backgroundColor = getRandomColor(); // Change the background color of the entire page
-        resultDiv.style.color = getRandomColor(); // Change the font color
+        document.body.style.backgroundColor = getRandomColor();
+        resultDiv.style.color = getRandomColor();
+
+        buttonAudio.play();
+
+        if (backgroundAudio.paused) {
+          backgroundAudio.play();
+        }
 
         intervalId = setInterval(() => {
           const randomIndex = Math.floor(Math.random() * vtubers.length);
           resultDiv.textContent = vtubers[randomIndex];
-        }, 100); // Change this interval for roulette speed
+        }, 100);
       } else {
         startButton.style.display = "block";
         stopButton.style.display = "none";
         button.style.backgroundColor = "";
-        document.body.style.backgroundColor = ""; // Reset the background color of the entire page
-        resultDiv.style.color = ""; // Reset the font color
+        document.body.style.backgroundColor = "";
+        resultDiv.style.color = "";
+
+        stopButtonAudio.play();
+
         clearInterval(intervalId);
       }
     }
   </script>
 </body>
 </html>
+
